@@ -1,0 +1,67 @@
+.f2-stage{position:relative;touch-action:pan-y}
+.f2-stage:focus{outline:none}
+.f2-stage:focus-visible{outline:1px solid var(--anatomy-muted);outline-offset:6px}
+.f2-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.f2-crumbs{max-width:720px;margin:18px auto 10px;padding:0 16px;font-family:var(--anatomy-mono);font-size:12px;letter-spacing:.04em}
+.f2-crumbs a,.iso-plate a{color:var(--anatomy-text)}
+.f2-crumbs a:hover{color:var(--anatomy-strong)}
+
+.f2-stage{
+  --f2-req:#2f6fdf;--f2-ok:#1f9d55;--f2-req-top:#cfdcf7;--f2-ok-top:#c8ecd6;
+  --f2-sbg:#f7f8fb;--f2-sbar:#e9ecf2;--f2-srow:#ffffff;--f2-sline:#d5dae3;--f2-sink:#a9b1bf;--f2-stext:#1d2330;--f2-smut:#7a8394;
+}
+.iso:not([data-theme="light"]) .f2-stage{
+  --f2-req:#6aa8ff;--f2-ok:#4fdc8c;--f2-req-top:#1b2f52;--f2-ok-top:#1d4a31;
+  --f2-sbg:#0f141c;--f2-sbar:#18202b;--f2-srow:#161d27;--f2-sline:#2a3443;--f2-sink:#4f5d72;--f2-stext:#e1e8f2;--f2-smut:#7d8899;
+}
+
+/* the message on the rods and the cable */
+.it[data-hot="req"]{--f2-c:var(--f2-req)}
+.it[data-hot="ok"]{--f2-c:var(--f2-ok)}
+.it[data-hot] .tb-body,.it[data-hot] .tb-shine{fill:color-mix(in srgb,var(--f2-c) calc(var(--g,0)*85%),var(--anatomy-shade-2))}
+.it[data-hot] .tb-shade{fill:color-mix(in srgb,var(--f2-c) calc(var(--g,0)*100%),var(--anatomy-shade-0))}
+.it[data-hot] .tb-edge{stroke:color-mix(in srgb,var(--f2-c) calc(var(--g,0)*100%),var(--anatomy-hi))}
+
+/* a layer's name tab lights while the message passes it */
+.it[data-name$=".tab"][data-hot] .iso-top,.it[data-name$=".tab"][data-hot] .iso-shade{fill:color-mix(in srgb,var(--f2-c) calc(var(--g,0)*40%),var(--anatomy-shade-2))}
+.it[data-name$=".tab"][data-hot] .iso-edge{stroke:color-mix(in srgb,var(--f2-c) calc(var(--g,0)*100%),var(--anatomy-lo))}
+
+/* state: register window, loading lamp, fetch wheel */
+.f2-window{fill:var(--anatomy-shade-0);stroke:var(--anatomy-lo);stroke-width:.4px;vector-effect:non-scaling-stroke}
+.f2-digits{fill:var(--anatomy-hi);font-family:var(--anatomy-mono);font-weight:600}
+.it[data-part="lamp-loading"][data-on] .iso-top,.it[data-part="lamp-loading"][data-on] .iso-shade{fill:var(--f2-req-top)}
+.it[data-part="lamp-loading"][data-on] .iso-edge{stroke:var(--f2-req)}
+.f2-hub{fill:var(--anatomy-hi)}
+.f2-rim{fill:none;stroke:var(--anatomy-hi);stroke-width:.6px;vector-effect:non-scaling-stroke}
+
+/* shell details */
+.f2-pill{fill:none;stroke:var(--anatomy-lo);stroke-width:.4px;vector-effect:non-scaling-stroke}
+.f2-pill.f2-on{fill:var(--anatomy-shade-0)}
+.f2-avatar{fill:var(--anatomy-shade-0);stroke:var(--anatomy-mid);stroke-width:.5px;vector-effect:non-scaling-stroke}
+
+/* the picture on the glass */
+.f2-screen text{font-family:var(--anatomy-mono)}
+.f2-sbg{fill:var(--f2-sbg)}
+.f2-sbar{fill:var(--f2-sbar)}
+.f2-shead{fill:var(--f2-srow);stroke:var(--f2-sline);stroke-width:.4px;vector-effect:non-scaling-stroke}
+.f2-snav{fill:var(--f2-sbar)}
+.f2-sact{fill:var(--f2-srow);stroke:var(--f2-sline);stroke-width:.4px;vector-effect:non-scaling-stroke}
+.f2-sdot{fill:var(--f2-sink)}
+.f2-surl{fill:var(--f2-srow);stroke:var(--f2-sline);stroke-width:.4px;vector-effect:non-scaling-stroke}
+.f2-smut{fill:var(--f2-smut)}
+.f2-sh{fill:var(--f2-stext);font-weight:600}
+.f2-st{fill:var(--f2-stext)}
+.f2-srow{fill:var(--f2-srow);stroke:var(--f2-sline);stroke-width:.4px;vector-effect:non-scaling-stroke}
+.f2-sink{fill:var(--f2-sink)}
+.f2-sink2{fill:var(--f2-sline)}
+.f2-sbtn{fill:var(--f2-srow);stroke:var(--f2-sink);stroke-width:.5px;vector-effect:non-scaling-stroke}
+.f2-sview{display:none}
+.f2-screen[data-view="list"] [data-v="list"],.f2-screen[data-view="note"] [data-v="note"]{display:inline}
+.f2-screen[data-press] .f2-scard[data-card="42"] .f2-srow{fill:var(--f2-req-top);stroke:var(--f2-req)}
+.f2-scard,.f2-card,.f2-btn,.f2-sback,.it[data-name^="cable"],.it[data-name="plug"]{cursor:pointer}
+.f2-card:hover .iso-edge,.f2-btn:hover .iso-edge{stroke:var(--f2-req)}
+.f2-scard:hover .f2-srow{stroke:var(--f2-req)}
+
+.f2-tip{position:absolute;z-index:3;max-width:250px;padding:8px 10px;border-radius:8px;background:var(--anatomy-card);border:1px solid var(--anatomy-faint);box-shadow:0 4px 14px #0000001f;pointer-events:none;font-size:12.5px;line-height:1.45;color:var(--anatomy-text)}
+.f2-tip strong{display:block;color:var(--anatomy-strong);font-weight:600;margin-bottom:2px}
+.f2-tip[hidden]{display:none}
