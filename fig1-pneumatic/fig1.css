@@ -80,3 +80,22 @@
 .f1-tip strong{display:block;color:var(--anatomy-strong);font-weight:600;margin-bottom:2px}
 .f1-tip[hidden]{display:none}
 .f1-stage svg .it[data-zone]:not([data-zone="base"]),.f1-stage svg [data-part]{cursor:help}
+
+/* step-through arrows, bottom-left of the card */
+.f1-steps{position:absolute;left:20px;bottom:12px;display:flex;align-items:center;gap:6px;font-family:var(--anatomy-mono);font-size:10.5px;letter-spacing:.06em;color:var(--anatomy-text);z-index:2}
+.f1-steps button{width:28px;height:24px;border-radius:6px;border:1px solid var(--anatomy-faint);background:var(--anatomy-card);color:var(--anatomy-strong);font:inherit;font-size:13px;line-height:1;cursor:pointer}
+.f1-steps button:hover:not(:disabled){border-color:var(--anatomy-mid)}
+.f1-steps button:focus-visible{outline:2px solid var(--anatomy-strong);outline-offset:2px}
+.f1-steps button:disabled{opacity:.35;cursor:default}
+.f1-steps span{margin-left:4px;text-transform:uppercase}
+
+/* while stepping through, the parts not involved in this step step down a tone */
+.f1-stage{--f1-k-lo:var(--anatomy-lo);--f1-k-faint:var(--anatomy-faint)}
+.f1-stage[data-focus="0"] .it:not([data-zone="view"]):not([data-zone="client"]),
+.f1-stage[data-focus="1"] .it:not([data-zone="client"]):not([data-zone="wire"]),
+.f1-stage[data-focus="2"] .it:not([data-zone="server"]),
+.f1-stage[data-focus="3"] .it:not([data-zone="server"]):not([data-zone="db"]),
+.f1-stage[data-focus="4"] .it:not([data-zone="server"]):not([data-zone="wire"]),
+.f1-stage[data-focus="5"] .it:not([data-zone="wire"]):not([data-zone="client"]):not([data-zone="view"]){
+  --anatomy-hi:var(--f1-k-lo);--anatomy-mid:var(--f1-k-faint);--anatomy-lo:var(--f1-k-faint);--anatomy-dot:var(--f1-k-lo)}
+@media (max-width:560px){.f1-steps{left:12px;bottom:40px}}

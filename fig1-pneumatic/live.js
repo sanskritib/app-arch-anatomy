@@ -53,6 +53,7 @@ function newRun(cold = state.cold) {
   return { plan, t: 0, method: state.method, fault: FAULTS[state.fault], line, cold, path: METHODS[state.method].path };
 }
 function send() {
+  walkOff();
   if (state.run) return;
   state.run = newRun();
   state.last = null;
@@ -413,6 +414,60 @@ function drawGlow(clock) {
   return any;
 }
 
+// ——— step through: arrows replay one part of a request at a time ————————————————————————
+const STEPS = [
+  { label: "You click", focus: "0", span: (p) => [0, stepOf(p, "click").t1], hold: 1.0 },
+  { label: "Request travels", focus: "1", span: (p) => [stepOf(p, "lift").t0, stepOf(p, "out").t1], hold: 1.0 },
+  { label: "Server reads it", focus: "2", span: (p) => [stepOf(p, "open").t0, stepOf(p, "open").t1], hold: 1.2 },
+  { label: "Database answers", focus: "3", span: (p) => [(stepOf(p, "query") ?? stepOf(p, "think")).t0, (stepOf(p, "rows") ?? stepOf(p, "think")).t1], hold: 1.2 },
+  { label: "Answer travels back", focus: "4", span: (p) => [stepOf(p, "pack").t0, stepOf(p, "back").t1], hold: 1.0 },
+  { label: "Screen updates", focus: "5", span: (p) => [stepOf(p, "drop").t0, p.total], hold: 1.8 },
+];
+const stepsEl = document.querySelector(".f1-steps");
+const walk = { on: false, at: 0, run: null, hold: 0 };
+function walkTo(index) {
+  walk.on = true;
+  walk.at = clamp(index, 0, STEPS.length - 1);
+  walk.run = newRun(false);
+  walk.run.t = STEPS[walk.at].span(walk.run.plan)[0];
+  walk.hold = 0;
+  state.run = null;
+  touring = false;
+  clearTimeout(idleTimer);
+  stage.setAttribute("data-focus", STEPS[walk.at].focus);
+  stepsEl.querySelector("[data-step-label]").textContent = `${walk.at + 1}/${STEPS.length} · ${STEPS[walk.at].label}`;
+  stepsEl.querySelector('[data-go="-1"]').disabled = walk.at === 0;
+  stepsEl.querySelector('[data-go="1"]').disabled = walk.at === STEPS.length - 1;
+  announce(`Step ${walk.at + 1} of ${STEPS.length}: ${STEPS[walk.at].label}`);
+  run();
+}
+function walkOff() {
+  if (!walk.on) return;
+  walk.on = false;
+  walk.run = null;
+  stage.removeAttribute("data-focus");
+  stepsEl.querySelector("[data-step-label]").textContent = "Step through";
+  stepsEl.querySelector('[data-go="-1"]').disabled = true;
+  stepsEl.querySelector('[data-go="1"]').disabled = false;
+}
+function walkTick(dt, calm, clock) {
+  const r = walk.run;
+  const [t0, end] = STEPS[walk.at].span(r.plan);
+  const t1 = end - 1e-3;
+  if (calm) r.t = t1;
+  else if (r.t < t1) r.t = Math.min(t1, r.t + dt);
+  else if ((walk.hold += dt) > STEPS[walk.at].hold) {
+    r.t = t0;
+    walk.hold = 0;
+  }
+  render(r, clock);
+}
+stepsEl.addEventListener("click", (event) => {
+  const b = event.target.closest("button[data-go]");
+  if (!b) return;
+  walkTo(walk.on ? walk.at + +b.dataset.go : 0);
+});
+
 // ——— readout, status, tour, loop ——————————————————————————————————————————————————
 function idleWord() {
   if (state.last) return `${state.last.method} ${state.last.path} · ${state.last.code} · ${fmt(state.last.ms)} ms`;
@@ -486,14 +541,18 @@ function tick(now) {
   last = now;
   clock += dt;
   const calm = still.matches;
-  tourTick(dt);
-  drawRun(dt, calm, clock);
-  const socket = drawSocket(dt, calm);
+  if (walk.on) walkTick(dt, calm, clock);
+  else {
+    tourTick(dt);
+    drawRun(dt, calm, clock);
+  }
+  if (walk.on) GLOW.speak = null;
+  const socket = walk.on ? false : drawSocket(dt, calm);
   const moving = drawControls(dt, calm);
   const lampMoving = settle(LAMP, LAMP.target, dt, 0.18, calm);
   drawGlow(clock);
-  if (!state.run) say(idleWord());
-  const busy = state.run || moving || lampMoving || (touring && !calm) || (socket && !calm);
+  if (!state.run && !walk.on) say(idleWord());
+  const busy = walk.on ? !calm : state.run || moving || lampMoving || (touring && !calm) || (socket && !calm);
   frame = visible && busy ? requestAnimationFrame(tick) : 0;
 }
 function run() {
@@ -509,6 +568,17 @@ new IntersectionObserver((entries) => {
 
 stage.addEventListener("keydown", (event) => {
   const key = event.key.toLowerCase();
+  if (key === "arrowright" || key === "arrowleft") {
+    event.preventDefault();
+    walkTo(walk.on ? walk.at + (key === "arrowright" ? 1 : -1) : 0);
+    return;
+  }
+  if (walk.on && key !== "escape") walkOff();
+  if (walk.on && key === "escape") {
+    walkOff();
+    event.preventDefault();
+    return;
+  }
   let handled = true;
   if (key === " " || key === "enter") send();
   else if (key === "g") state.method = "GET";

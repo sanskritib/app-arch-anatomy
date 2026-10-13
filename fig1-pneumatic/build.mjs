@@ -534,17 +534,8 @@ const body =
   k.plateHtml({
     fig: "Fig 1",
     title: "Frontend ↔ backend",
-    hint: "Space sends · click the screen to open it",
     readout: "ready · GET /api/notes/42",
-    keys: [
-      { mark: "lit", label: "Canister: one HTTP request out, its response back. Its tag is the method, its window the JSON body, its band the status" },
-      { mark: "blue", label: "Browser station speaks HTML, CSS and JavaScript; server station TypeScript or Python; the cabinet SQL. Only JSON over HTTP crosses the overhead tube" },
-      { mark: "green", label: "Status band and lamps: 2xx green, 404 amber, 500 red" },
-      { mark: "dashed", label: "Speaking tube: a WebSocket, opened once with 101 Switching Protocols, then left open for small messages both ways" },
-    ],
-    caption:
-      "Round trips are measured averages between backbone points of presence (ping, hatsnet.io, Oct 2026): New York–Ashburn 6.1 ms, New York–Los Angeles 57.9 ms, New York–London 64.5 ms; light in fibre alone costs about 1 ms per 100 km of round trip. A kept-alive connection needs one round trip per request; a new HTTPS connection needs three (TCP, TLS 1.3, then the request), shown by the valve. Server time (2.0 ms) and the indexed query (0.8 ms) are representative, not measured. Tube travel is slowed 50×; handling at each station is not to scale.",
-    body: stage,
+    body: stage + `<div class="f1-steps"><button type="button" data-go="-1" aria-label="Previous step" disabled>←</button><button type="button" data-go="1" aria-label="Next step">→</button><span data-step-label>Step through</span></div>`,
   });
 
 const page = k.pageHtml({ title: "Frontend and backend", theme: THEME, body, script: kitScript() + glScript() + LIVE, width: 700 });
